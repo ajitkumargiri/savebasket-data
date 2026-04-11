@@ -1,9 +1,12 @@
 from playwright.sync_api import sync_playwright
 import json
+import os
 
 URL = "https://www.jumbo.com/producten"
 
 def scrape_jumbo():
+
+    os.makedirs("output", exist_ok=True)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -16,11 +19,11 @@ def scrape_jumbo():
         page.wait_for_timeout(5000)
 
         # scroll to load products
-        for _ in range(8):
+        for _ in range(10):
             page.mouse.wheel(0, 4000)
             page.wait_for_timeout(2000)
 
-        items = page.query_selector_all('[data-testid="product-tile"]')
+        items = page.query_selector_all("article.product-container")
 
         print(f"Found {len(items)} products")
 
@@ -28,20 +31,21 @@ def scrape_jumbo():
 
         for item in items[:50]:
             try:
-                name_el = item.query_selector('[data-testid="product-title"]')
-                price_el = item.query_selector('[data-testid="price"]')
+                name_el = item.query_selector("h3")
+                whole_el = item.query_selector(".whole")
+                frac_el = item.query_selector(".fractional")
 
-                if not name_el or not price_el:
+                if not name_el or not whole_el or not frac_el:
                     continue
 
-                name = name_el.inner_text()
-                price = price_el.inner_text()
+                name = name_el.inner_text().strip()
+                price = f"€{whole_el.inner_text().strip()}.{frac_el.inner_text().strip()}"
 
                 data.append({
                     "store": "Jumbo",
                     "category": "all",
-                    "name": name.strip(),
-                    "price": price.strip()
+                    "name": name,
+                    "price": price
                 })
 
             except:
