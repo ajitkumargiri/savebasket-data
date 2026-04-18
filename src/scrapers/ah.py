@@ -98,13 +98,14 @@ def run():
         browser.close()
 
     # Save files
+    os.makedirs("output/raw/ah", exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    filename = f"output/raw/ah_{timestamp}.json"
+    filename = f"output/raw/ah/ah_{timestamp}.json"
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(all_products, f, indent=2, ensure_ascii=False)
 
-    with open("output/raw/ah_latest.json", "w", encoding="utf-8") as f:
+    with open("output/raw/ah/ah_latest.json", "w", encoding="utf-8") as f:
         json.dump(all_products, f, indent=2, ensure_ascii=False)
 
     logger.end_scraping("Albert Heijn", len(all_products))

@@ -110,20 +110,19 @@ def run():
         browser.close()
 
     # Save files
+    os.makedirs("output/raw/aldi", exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    
-    # Save to raw output
-    filename = f"output/raw/aldi_{timestamp}.json"
+
+    filename = f"output/raw/aldi/aldi_{timestamp}.json"
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(all_products, f, indent=2, ensure_ascii=False)
 
-    # Also save as latest
-    with open("output/raw/aldi_latest.json", "w", encoding="utf-8") as f:
+    with open("output/raw/aldi/aldi_latest.json", "w", encoding="utf-8") as f:
         json.dump(all_products, f, indent=2, ensure_ascii=False)
 
     logger.end_scraping("ALDI", len(all_products))
     logger.info(f"📁 Saved to: {filename}")
-    logger.info("📌 Updated: output/raw/aldi_latest.json")
+    logger.info("📌 Updated: output/raw/aldi/aldi_latest.json")
     
     return all_products
 

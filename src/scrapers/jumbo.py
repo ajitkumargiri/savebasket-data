@@ -9,7 +9,6 @@ import threading
 MAIN_PAGE_URL = "https://www.jumbo.com/producten/"
 
 STEP = 24  # products per page
-NUMBER_OF_CATEGORIES = 18  # Fetch only N categories (1=first, 2=first+second, etc.)
 DELAY_BETWEEN_REQUESTS = 0.5  # 500ms - respectful & fast
 TIMEOUT_PER_PAGE = 30000  # 30 seconds
 
@@ -62,8 +61,8 @@ def get_all_categories(page):
 def get_category_filename(category_name):
     """Generate a safe output filename for a category (date-stamped)."""
     safe_name = category_name.replace(" ", "_").replace(",", "").lower()
-    date = datetime.now().strftime("%Y-%m-%d")
-    return f"output/jumbo_{safe_name}_{date}.json"
+    date = datetime.now().strftime("%d-%m-%Y")
+    return f"output/jumbo/{date}/{safe_name}.json"
 
 
 def category_file_exists(category_name):
@@ -73,8 +72,8 @@ def category_file_exists(category_name):
 
 def save_category_products(category_name, products):
     """Save products for a single category to its own JSON file."""
-    os.makedirs("output", exist_ok=True)
     filename = get_category_filename(category_name)
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(products, f, indent=2, ensure_ascii=False)
     return filename
@@ -186,8 +185,7 @@ def run():
     os.makedirs("output", exist_ok=True)
 
     print("🚀 Starting Jumbo Scraper (MULTI-CATEGORY MODE)")
-    print(f"{'='*60}")
-    print(f"NUMBER_OF_CATEGORIES: {NUMBER_OF_CATEGORIES}")
+
     print(f"{'='*60}\n")
 
     all_data = []
@@ -206,9 +204,9 @@ def run():
             print("❌ No categories found!")
             return []
 
-        # STEP 2: Limit to NUMBER_OF_CATEGORIES
-        categories_to_scrape = all_categories[:NUMBER_OF_CATEGORIES]
-        print(f"Processing {len(categories_to_scrape)} of {len(all_categories)} categories\n")
+        # STEP 2: Scrape all categories
+        categories_to_scrape = all_categories
+        print(f"Processing {len(categories_to_scrape)} categories\n")
 
         # STEP 3: Scrape each category
         for i, category in enumerate(categories_to_scrape, 1):

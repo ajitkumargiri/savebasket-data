@@ -43,13 +43,14 @@ def run():
         browser.close()
 
     # Save files
+    os.makedirs("output/raw/vomar", exist_ok=True)
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
-    filename = f"output/raw/vomar_dairy_{timestamp}.json"
+    filename = f"output/raw/vomar/vomar_{timestamp}.json"
 
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    with open("output/raw/vomar_dairy_latest.json", "w", encoding="utf-8") as f:
+    with open("output/raw/vomar/vomar_latest.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
     logger.end_scraping("Vomar", len(data))
